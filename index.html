@@ -8,11 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!--
-  TRACCIAMENTO ADS: inserire qui gli script di LinkedIn Insight Tag / Meta Pixel / Google Tag
-  una volta che la pagina è ospitata sul dominio reale di C.L.A. Su questa preview gli script
-  esterni diversi da quelli consentiti non vengono eseguiti.
--->
 
 <style>
   :root{
@@ -490,39 +485,80 @@
       <p><strong>Dati raccolti:</strong> nome e cognome, azienda, telefono, email e tipo di impianto, forniti volontariamente tramite il modulo di richiesta audit.</p>
       <p><strong>Finalit&agrave;:</strong> gestione della richiesta di audit energetico gratuito, organizzazione del sopralluogo tecnico ed eventuale ricontatto commerciale.</p>
       <p><strong>Base giuridica:</strong> consenso dell'interessato (art. 6.1.a GDPR) ed esecuzione di misure precontrattuali su richiesta dell'interessato (art. 6.1.b GDPR).</p>
+      <p><strong>Destinatari:</strong> i dati inviati tramite il modulo sono ricevuti tramite il servizio Formspree (Formspree, Inc.), che agisce come fornitore tecnico per conto del Titolare. Se accetti i cookie di misurazione, Meta Platforms Ireland Ltd. riceve dati di navigazione tramite il Meta Pixel (vedi Cookie Policy).</p>
       <p><strong>Conservazione:</strong> i dati sono conservati per il tempo necessario a gestire la richiesta e, in caso di rapporto commerciale, per il periodo previsto dagli obblighi di legge.</p>
       <p><strong>Diritti dell'interessato:</strong> in qualsiasi momento &egrave; possibile richiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilit&agrave; dei dati (artt. 15-22 GDPR), scrivendo a info@clacompressori.it.</p>
       <p style="font-size:.75rem;opacity:.8;">Questo testo ha valore informativo generale: per una verifica di conformit&agrave; completa alla normativa privacy si consiglia una revisione da parte di un consulente legale.</p>
     </details>
     <details id="cookie-policy">
       <summary>Cookie Policy</summary>
-      <p>Questa pagina utilizza esclusivamente cookie tecnici necessari al suo funzionamento (es. per ricordare la chiusura del banner informativo).</p>
-      <p>Non vengono attualmente utilizzati cookie di profilazione o di tracciamento pubblicitario. Se in futuro verranno attivati strumenti come LinkedIn Insight Tag, Meta Pixel o Google Tag per le campagne, verr&agrave; richiesto un consenso esplicito tramite banner dedicato, conformemente al GDPR e alle linee guida del Garante Privacy.</p>
+      <p><strong>Cookie tecnici:</strong> necessari al funzionamento della pagina (es. per ricordare la tua scelta sul consenso). Non richiedono consenso.</p>
+      <p><strong>Cookie di profilazione e misurazione (Meta Pixel):</strong> solo se accetti dal banner, questa pagina carica il Meta Pixel di Meta Platforms Ireland Ltd., che raccoglie informazioni sulla tua visita (es. pagine visualizzate e invio del modulo) per misurare l'efficacia delle campagne pubblicitarie e mostrare annunci pertinenti su Facebook e Instagram. Se rifiuti, il Meta Pixel non viene caricato. Puoi cambiare idea in qualsiasi momento con il link qui sotto. Per maggiori informazioni consulta l'informativa di Meta.</p>
+      <p><a href="#" id="cookieReopen" style="color:var(--blue);text-decoration:underline;">Modifica le tue preferenze sui cookie</a></p>
     </details>
   </div>
 </div>
 
 <div class="cookie-banner" id="cookieBanner">
-  <p>Questo sito utilizza solo cookie tecnici necessari al funzionamento della pagina. Consulta la <a href="#cookie-policy">Cookie Policy</a>.</p>
-  <button class="btn btn-solid" id="cookieAccept" style="padding:10px 18px;font-size:.85rem;">Ho capito</button>
+  <p>Utilizziamo cookie tecnici necessari al funzionamento della pagina e, solo con il tuo consenso, il Meta Pixel per misurare l'efficacia delle nostre campagne pubblicitarie. Puoi accettare o rifiutare. Consulta la <a href="#cookie-policy">Cookie Policy</a>.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn" id="cookieReject" style="padding:10px 18px;font-size:.85rem;background:#fff;color:var(--ink);border:1px solid var(--border);">Rifiuta</button>
+    <button class="btn btn-solid" id="cookieAccept" style="padding:10px 18px;font-size:.85rem;">Accetta</button>
+  </div>
 </div>
 
 <script>
+/* Meta Pixel: caricato SOLO dopo il consenso esplicito dell'utente */
+var CLA_PIXEL_ID = '1095478929901307';
+function loadMetaPixel(){
+  if (window.fbq) return;
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', CLA_PIXEL_ID);
+  fbq('track', 'PageView');
+}
+
 (function(){
-  try {
-    const banner = document.getElementById('cookieBanner');
-    const accepted = localStorage.getItem('cla_cookie_ack');
-    if (!accepted && banner) {
-      banner.classList.add('show');
-    }
-    const acceptBtn = document.getElementById('cookieAccept');
-    if (acceptBtn) {
-      acceptBtn.addEventListener('click', function(){
-        try { localStorage.setItem('cla_cookie_ack', '1'); } catch(e) {}
-        banner.classList.remove('show');
-      });
-    }
-  } catch(e) { /* storage unavailable, skip banner persistence */ }
+  const banner = document.getElementById('cookieBanner');
+  function getChoice(){
+    try { return localStorage.getItem('cla_cookie_consent'); } catch(e) { return null; }
+  }
+  function setChoice(v){
+    try { localStorage.setItem('cla_cookie_consent', v); } catch(e) {}
+  }
+  function hideBanner(){ if (banner) banner.classList.remove('show'); }
+
+  const choice = getChoice();
+  if (choice === 'granted') {
+    loadMetaPixel();
+  } else if (!choice && banner) {
+    banner.classList.add('show');
+  }
+
+  const acceptBtn = document.getElementById('cookieAccept');
+  const rejectBtn = document.getElementById('cookieReject');
+  if (acceptBtn) acceptBtn.addEventListener('click', function(){
+    setChoice('granted');
+    loadMetaPixel();
+    hideBanner();
+  });
+  if (rejectBtn) rejectBtn.addEventListener('click', function(){
+    setChoice('denied');
+    hideBanner();
+  });
+
+  const reopen = document.getElementById('cookieReopen');
+  if (reopen) reopen.addEventListener('click', function(e){
+    e.preventDefault();
+    try { localStorage.removeItem('cla_cookie_consent'); } catch(err) {}
+    if (banner) banner.classList.add('show');
+  });
 })();
 
 (function(){
@@ -557,7 +593,10 @@
       headers: { 'Accept': 'application/json' },
       body: new FormData(form)
     }).then(function(res){
-      if (res.ok) { finish(); } else { fail(); }
+      if (res.ok) {
+        if (window.fbq) { try { fbq('track', 'Lead'); } catch(e) {} }
+        finish();
+      } else { fail(); }
     }).catch(fail);
   });
 })();
