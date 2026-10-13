@@ -276,9 +276,9 @@
       <h2>Richiedi il tuo audit energetico e tecnico</h2>
       <p class="form-sub">Compilalo in 2 minuti: ti ricontattiamo per fissare il sopralluogo tecnico gratuito.</p>
 
-      <form id="auditForm" name="audit-lead" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <input type="hidden" name="form-name" value="audit-lead">
-        <p style="display:none;"><label>Non compilare questo campo: <input name="bot-field"></label></p>
+      <form id="auditForm" name="audit-lead" method="POST" action="https://formspree.io/f/xjygeqdw">
+        <input type="hidden" name="_subject" value="Nuova richiesta audit energetico - C.L.A. Compressori">
+        <p style="display:none;"><label>Non compilare questo campo: <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label></p>
         <div class="field">
           <label for="nome">Nome e cognome</label>
           <input type="text" id="nome" name="nome" required autocomplete="name">
@@ -530,36 +530,35 @@
   const success = document.getElementById('formSuccess');
   const btn = document.getElementById('submitBtn');
 
-  function encode(data){
-    return Object.keys(data).map(function(key){
-      return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-    }).join('&');
-  }
+  const errMsg = document.createElement('p');
+  errMsg.style.cssText = 'display:none;color:#b42318;font-size:.88rem;margin:10px 0 0;';
+  errMsg.textContent = 'Invio non riuscito. Riprova tra poco oppure chiamaci al 06 8692 5851.';
+  btn.parentNode.insertBefore(errMsg, btn.nextSibling);
 
   function finish(){
     form.classList.add('hide');
     success.classList.add('show');
   }
 
+  function fail(){
+    btn.disabled = false;
+    btn.textContent = "Richiedi l'audit gratuito";
+    errMsg.style.display = 'block';
+  }
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
+    errMsg.style.display = 'none';
     btn.disabled = true;
     btn.textContent = 'Invio in corso...';
 
-    const lead = {
-      'form-name': 'audit-lead',
-      nome: document.getElementById('nome').value.trim(),
-      azienda: document.getElementById('azienda').value.trim(),
-      telefono: document.getElementById('telefono').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      impianto: document.getElementById('impianto').value
-    };
-
-    fetch('/', {
+    fetch(form.action, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: encode(lead)
-    }).then(finish).catch(finish);
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    }).then(function(res){
+      if (res.ok) { finish(); } else { fail(); }
+    }).catch(fail);
   });
 })();
 </script>
